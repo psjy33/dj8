@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block con %}
+    <h1><b>번역기</b></h1>
+
+    {% for k, v in d.items %}
+        {{ k }} {{ v }} <br>
+    {% endfor %}
+
+    <form method="post" name="transForm">
+        {% csrf_token %}
+        <div class="row mt-5">
+            <div class="col-sm-5">
+                <textarea class="form-control" name="bf" style="height: 250px;">{{ bf }}</textarea>
+            </div>
+            <div class="col-sm-2 text-center" style="margin: auto;">
+                <select class="form-select" name="fr">
+                    {% for code, name in ndict.items %}
+                        <option value="{{ code }}" {% if fr %}{% if fr == code %} selected {% endif %}{% else %}{% if code == "ko" %} selected {% endif %} {% endif %}>{{ name|upper }}</option>
+                    {% endfor %}
+                </select>
+                <button class="btn btn-dark mt-4 mb-4" style="width: 100%;" type="button" onclick="check()">번역</button>
+                <select class="form-select" name="to">
+                    {% for code, name in ndict.items %}
+                        <option value="{{ code }}" {% if to %}{% if to == code %} selected {% endif %}{% else %}{% if code == "en" %} selected {% endif %} {% endif %}>{{ name|upper }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-sm-5">
+                <textarea class="form-control" style="height: 250px;" disabled>{{ af }}</textarea>
+            </div>
+        </div>
+    </form>
+
+    {% if af %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="text-end mt-4">
+                <input type="hidden" name="bf" value="{{af}}">
+                <input type="hidden" name="fr" value="{{to}}">
+                <input type="hidden" name="to" value="{{fr}}">
+                <button class="btn btn-outline-dark">🔨</button>
+            </div>
+        </form>
+
+        <form method="post" action="{% url 'tts:index' %}">
+            {% csrf_token %}
+            <input type="hidden" name="st" value="{{af}}">
+            <input type="hidden" name="lang" value="{{to}}">
+            <input type="text" name="fname">
+            <button>TTS</button>
+        </form>
+    {% endif %}
+
+    <script>
+        function check(){
+            tf = document.transForm;
+            if(!tf.bf.value){
+                alert("번역전 텍스트를 입력해주세요");
+            }else if(tf.fr.value == tf.to.value){
+                alert("서로 다른 나라를 골라주세요");
+            }else{
+                tf.submit();
+            }
+        }
+    </script>
+
+{% endblock %}

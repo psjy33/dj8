@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block con %}
+
+    {% if user.is_authenticated %}
+        <h1><b>{{user}}</b> WELCOME 🎈</h1>
+    {% else %}
+        <h1>LOGIN FIRST! 🙏🏼</h1>
+    {% endif %}
+    
+{% endblock %}
